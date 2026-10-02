@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kong Diferencial</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;background:linear-gradient(160deg,#1a0b4d,#5b1a9a 60%,#c2185b);min-height:100%;color:#fff;font-family:system-ui,sans-serif}
+#a{max-width:640px;margin:auto;position:relative;padding:6px}
+#h{display:flex;justify-content:space-between;align-items:center;background:#ffffff18;border:2px solid #ffd166;border-radius:10px;padding:4px 8px;font-weight:700;color:#ffd166;font-size:13px}
+#h button{padding:5px 9px;margin:0 0 0 4px;font-size:12px}
+canvas#c{width:100%;display:block;border-radius:10px;margin-top:6px;border:2px solid #ff4fa3;box-shadow:0 0 22px #ff4fa3aa}
+#o{position:absolute;inset:0;background:#0a0424cc;display:flex;align-items:center;justify-content:center;padding:8px;border-radius:10px}
+.bx{background:linear-gradient(160deg,#2b1268f2,#5b1a9af2);border:3px solid #ffd166;border-radius:16px;padding:14px;max-width:540px;width:100%;max-height:96%;overflow:auto;text-align:center;box-shadow:0 0 30px #ffd16688;animation:pop .3s}
+.bx h1{margin:4px;font-size:34px;line-height:1;color:#ffd166;text-shadow:0 0 12px #ff4fa3,3px 3px 0 #ff2e93;animation:fl 2s infinite ease-in-out}
+.bx h2,.bx h3{margin:6px 0;color:#ffd166}.bx p,.bx li{font-size:14px;line-height:1.4}.bx ul,.bx ol{text-align:left;padding-left:22px}.bx small{color:#9ff}
+button{touch-action:manipulation;font:inherit;background:linear-gradient(#ffd166,#ff9f1c);color:#2b1268;border:0;border-radius:10px;padding:10px 14px;margin:4px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 #b36b00}
+button:active{transform:translateY(2px)}button.on{background:linear-gradient(#06d6a0,#028a6a);color:#fff}
+.op{display:block;width:100%;background:linear-gradient(#3a86ff,#2b4fd6);color:#fff;text-align:left;box-shadow:0 3px 0 #1b2f8a}
+.op.g{background:linear-gradient(#06d6a0,#028a6a);animation:pop .4s}.op.r{background:linear-gradient(#ef476f,#b3123a);animation:sk .4s}
+#tb{height:10px;background:#0006;border-radius:6px;overflow:hidden;margin:6px 0 2px}#tf{display:block;height:100%;width:100%;background:#06d6a0}
+#ts{font-weight:800;color:#ffd166}canvas#gc,canvas#pv{max-width:100%;border-radius:8px;border:2px solid #ffd16688;margin:4px 0}
+.sw{display:inline-block;width:30px;height:30px;border-radius:50%;margin:3px;border:3px solid #fff5;cursor:pointer}.sw.s{border-color:#fff;transform:scale(1.2)}
+input{font:inherit;padding:8px;border-radius:8px;border:2px solid #ffd166;width:80%;text-align:center;font-weight:700}
+#pv{position:sticky;top:0;background:#2b1268ee;z-index:2}#t{display:flex;justify-content:center;gap:6px;margin-top:6px}#t button{font-size:22px;width:60px;height:52px;touch-action:none;user-select:none;-webkit-user-select:none}
+@keyframes pop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}@keyframes sk{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}@keyframes fl{50%{transform:translateY(-5px)}}
+</style></head><body><div id="a"><div id="h"><span id="ht"></span><span><button data-a="pau">Menú</button><button data-a="mus">Música</button></span></div><canvas id="c" width="600" height="480"></canvas>
+<div id="t"><button data-k="l">◀</button><button data-k="u">▲</button><button data-k="d">▼</button><button data-k="r">▶</button><button data-k="j" style="width:90px;font-size:14px">SALTO</button></div><div id="o"></div></div>
+<script>
+const T=[
+["Intervalos",[["El intervalo [−2, 5) equivale a:","−2 ≤ x < 5","−2 < x ≤ 5","−2 < x < 5","−2 ≤ x ≤ 5"],["¿Qué número pertenece a (3, 7]?","7","3","8","2"],["x ≥ 4 en notación de intervalo:","[4, ∞)","(4, ∞)","(−∞, 4]","(−∞, 4)"],["Solución de 2x − 6 < 4:","(−∞, 5)","(−∞, 5]","(5, ∞)","(−∞, 1)"]]],
+["Uniones de intervalos",[["[1, 3] ∪ [2, 6] =","[1, 6]","[2, 3]","(1, 6)","[1, 2]"],["(−∞, 2) ∪ (2, ∞) =","ℝ − {2}","ℝ","{2}","∅"],["[1, 4] ∩ [3, 8] =","[3, 4]","[1, 8]","(3, 4)","[4, 8]"],["(0, 1) ∪ [1, 2) =","(0, 2)","(0, 2]","[0, 2)","(1, 2)"]]],
+["Propiedad distributiva",[["3(x + 4) =","3x + 12","3x + 4","x + 12","3x + 7"],["−2(x − 5) =","−2x + 10","−2x − 10","2x + 10","−2x − 5"],["(x + 2)(x + 3) =","x² + 5x + 6","x² + 6","x² + 5x + 5","x² + 6x + 5"],["2x(3x − 1) =","6x² − 2x","6x − 2x","5x² − 2x","6x² − 1"]]],
+["Potencias",[["2³ · 2⁴ =","2⁷","2¹²","4⁷","2¹"],["(3²)³ =","3⁶","3⁵","3⁸","9⁵"],["5⁻² =","1/25","−25","−10","1/10"],["x⁷ / x³ =","x⁴","x¹⁰","x²¹","x⁻⁴"]]],
+["Raíces",[["√50 =","5√2","25√2","2√5","10√5"],["∛27 =","3","9","6","1/3"],["Racionalizando 1/√2 se obtiene:","√2/2","2√2","1/2","√2"],["√(x²) para x real es:","|x|","x","−x","x²"]]],
+["Productos notables",[["(a + b)² =","a² + 2ab + b²","a² + b²","a² − 2ab + b²","a² + ab + b²"],["(x − 3)(x + 3) =","x² − 9","x² + 9","x² − 6x + 9","x² − 6"],["(2x + 1)² =","4x² + 4x + 1","4x² + 1","2x² + 4x + 1","4x² + 2x + 1"],["(x + 2)³ =","x³ + 6x² + 12x + 8","x³ + 8","x³ + 6x² + 6x + 8","x³ + 2x² + 4x + 8"]]],
+["Factorización",[["Factoriza x² − 25:","(x − 5)(x + 5)","(x − 5)²","(x + 5)²","(x − 25)(x + 1)"],["Factoriza x² + 5x + 6:","(x + 2)(x + 3)","(x + 1)(x + 6)","(x − 2)(x − 3)","(x + 5)(x + 1)"],["Factor común de 6x² + 3x:","3x(2x + 1)","6x(x + 1)","3x(2x + 3)","2x(3x + 1)"],["Factoriza x³ − 8:","(x − 2)(x² + 2x + 4)","(x − 2)³","(x − 2)(x² − 2x + 4)","(x + 2)(x² − 2x + 4)"]]],
+["Coordenadas y distancia",[["Distancia entre (0, 0) y (3, 4):","5","7","√7","12"],["Punto medio de (2, 4) y (6, 8):","(4, 6)","(8, 12)","(3, 5)","(4, 12)"],["El punto (−3, 2) está en el cuadrante:","II","I","III","IV"],["Distancia entre (2, −1) y (2, 7):","8","6","10","√8"]]],
+["Ecuación de la recta",[["Pendiente de la recta por (1, 2) y (3, 8):","3","2","6","1/3"],["Ordenada al origen de y = 2x − 5:","−5","2","5","−2"],["Recta de pendiente 2 que pasa por (1, 3):","y = 2x + 1","y = 2x + 3","y = x + 2","y = 2x − 1"],["Pendiente de una recta perpendicular a y = 3x + 1:","−1/3","3","1/3","−3"]]],
+["Funciones y dominio",[["Dominio de f(x) = √(x − 4):","[4, ∞)","(4, ∞)","(−∞, 4]","ℝ"],["Dominio de f(x) = 1/(x − 3):","ℝ − {3}","ℝ − {0}","(3, ∞)","ℝ"],["Si f(x) = x² − 1, entonces f(3) =","8","5","10","2"],["Rango de f(x) = x²:","[0, ∞)","ℝ","(0, ∞)","(−∞, 0]"]]],
+["Logaritmos",[["log₂ 8 =","3","4","2","16"],["log₁₀ 1000 =","3","2","10","100"],["log(a·b) =","log a + log b","log a · log b","log a − log b","log(a + b)"],["ln(e⁵) =","5","e","1/5","e⁵"]]],
+["Tipos de funciones e inversas",[["La inversa de f(x) = 2x + 6 es:","(x − 6)/2","2x − 6","(x + 6)/2","x/2 + 6"],["La inversa de f(x) = x³ es:","∛x","1/x³","−x³","x²"],["f(x) = 3ˣ es una función:","exponencial","polinomial","logarítmica","racional"],["La inversa de f(x) = eˣ es:","ln x","1/eˣ","e⁻ˣ","−eˣ"]]],
+["Razones trigonométricas",[["sen 30° =","1/2","√3/2","√2/2","1"],["cos 0° =","1","0","−1","1/2"],["sen²x + cos²x =","1","0","2","sen 2x"],["tan 45° =","1","0","√3","1/2"]]],
+["Límites",[["lím x→2 (x² + 1) =","5","4","3","∞"],["lím x→3 (x² − 9)/(x − 3) =","6","0","3","no existe"],["lím x→∞ 1/x =","0","1","∞","−1"],["lím x→0 (sen x)/x =","1","0","∞","no existe"]]]
+];
+const EX=[
+["El corchete [ incluye el extremo −2 (≤) y el paréntesis ) excluye el 5 (<).","(3, 7] excluye el 3 pero incluye el 7; el 8 y el 2 quedan fuera del intervalo.","x ≥ 4 incluye el 4 y se extiende hasta el infinito: [4, ∞). El infinito siempre lleva paréntesis.","2x − 6 < 4 → 2x < 10 → x < 5. Cualquier número menor que 5 sirve: (−∞, 5)."],
+["Los intervalos se traslapan en [2, 3]; la unión va del menor extremo (1) al mayor (6): [1, 6].","Ninguno de los dos intervalos contiene al 2, así que la unión son todos los reales menos el 2: ℝ − {2}.","La intersección son los números que están en ambos intervalos: de 3 a 4, con extremos incluidos: [3, 4].","El 1 lo aporta [1, 2), así que no queda hueco; el 0 y el 2 no pertenecen a ninguno: (0, 2)."],
+["Se multiplica el 3 por cada término del paréntesis: 3·x + 3·4 = 3x + 12.","−2·x = −2x y −2·(−5) = +10 (menos por menos da más): −2x + 10.","x·x + x·3 + 2·x + 2·3 = x² + 3x + 2x + 6 = x² + 5x + 6.","2x·3x = 6x² y 2x·(−1) = −2x, entonces 6x² − 2x."],
+["Misma base: se suman los exponentes, 3 + 4 = 7, entonces 2⁷.","Potencia de una potencia: se multiplican los exponentes, 2·3 = 6, entonces 3⁶.","Un exponente negativo invierte la base: 5⁻² = 1/5² = 1/25.","Misma base: se restan los exponentes, 7 − 3 = 4, entonces x⁴."],
+["√50 = √(25·2) = √25·√2 = 5√2.","3·3·3 = 27, así que la raíz cúbica de 27 es 3.","Se multiplica arriba y abajo por √2: (1·√2)/(√2·√2) = √2/2.","x² nunca es negativo y la raíz principal nunca da un valor negativo, por eso el resultado es |x|."],
+["El cuadrado de un binomio es: el cuadrado del primero, más el doble producto, más el cuadrado del segundo.","Es suma por diferencia: (x − 3)(x + 3) = x² − 3² = x² − 9.","(2x)² + 2·(2x)·1 + 1² = 4x² + 4x + 1.","(a + b)³ = a³ + 3a²b + 3ab² + b³ con a = x y b = 2: x³ + 6x² + 12x + 8."],
+["Es una diferencia de cuadrados: a² − b² = (a − b)(a + b), con a = x y b = 5.","Se buscan dos números que multipliquen 6 y sumen 5: el 2 y el 3, entonces (x + 2)(x + 3).","El factor común es 3x: 6x² = 3x·2x y 3x = 3x·1, entonces 3x(2x + 1).","Es una diferencia de cubos: a³ − b³ = (a − b)(a² + ab + b²), con a = x y b = 2."],
+["d = √((3 − 0)² + (4 − 0)²) = √(9 + 16) = √25 = 5.","El punto medio es el promedio de las coordenadas: ((2 + 6)/2, (4 + 8)/2) = (4, 6).","Con x negativa y y positiva, el punto queda en el segundo cuadrante (II).","Tienen la misma x, así que la distancia es la diferencia de las y: |7 − (−1)| = 8."],
+["m = (y₂ − y₁)/(x₂ − x₁) = (8 − 2)/(3 − 1) = 6/2 = 3.","En y = mx + b, el número b es la ordenada al origen; aquí b = −5.","y − 3 = 2(x − 1) → y = 2x − 2 + 3 → y = 2x + 1.","Las rectas perpendiculares tienen pendientes opuestas e inversas: m₂ = −1/m₁ = −1/3."],
+["La raíz exige que x − 4 ≥ 0, es decir x ≥ 4; el dominio es [4, ∞).","No se puede dividir entre cero: x − 3 ≠ 0, así que x ≠ 3 y el dominio es ℝ − {3}.","Se sustituye x = 3: f(3) = 3² − 1 = 9 − 1 = 8.","Un cuadrado nunca es negativo y vale 0 cuando x = 0, entonces el rango es [0, ∞)."],
+["log₂ 8 = 3 porque 2³ = 8.","log₁₀ 1000 = 3 porque 10³ = 1000.","Propiedad del producto: el logaritmo de un producto es la suma de los logaritmos.","ln y eˣ son funciones inversas, por eso ln(e⁵) = 5."],
+["Se despeja x en y = 2x + 6: x = (y − 6)/2. Al intercambiar las variables, f⁻¹(x) = (x − 6)/2.","La inversa de elevar al cubo es la raíz cúbica: ∛x, pues ∛(x³) = x.","La variable está en el exponente y la base es constante (3): es una función exponencial.","La inversa de la exponencial de base e es el logaritmo natural: ln x."],
+["Por definición de ángulo notable, sen 30° = 1/2.","En el círculo unitario, el ángulo 0° corresponde al punto (1, 0), así que cos 0° = 1.","Es la identidad pitagórica fundamental: sen²x + cos²x = 1.","A 45° los dos catetos son iguales, por eso tan 45° = 1."],
+["Sustitución directa: 2² + 1 = 5.","Se factoriza: (x² − 9)/(x − 3) = (x − 3)(x + 3)/(x − 3) = x + 3, y cuando x → 3 vale 6.","Mientras x crece, 1/x se hace cada vez más pequeño y se acerca a 0.","Es un límite notable: lím x→0 (sen x)/x = 1."]
+];
+const $=i=>document.getElementById(i),c=$("c"),x=c.getContext("2d"),o=$("o");
+const P=[440,350,260,170,80],L=[{x:520,l:0},{x:80,l:1},{x:520,l:2},{x:80,l:3}];
+const COL={skin:["#ffdfc4","#f1c27d","#d9a066","#a8703f","#7a4a2a","#4a2c17"],hair:["#1b1b1b","#5a3418","#a0522d","#e3b448","#c1272d","#8e6bff"],top:["#e63946","#06d6a0","#118ab2","#ffd166","#9b5de5","#ff6fb5","#f8f9fa","#22252b"],pant:["#2f4b7c","#1c1c1c","#b08d57","#6c757d","#8d2b2b"],shoe:["#f5f5f5","#e63946","#1c1c1c","#ffd166","#3a86ff"],hat:["#ffd166","#e63946","#3a86ff","#06d6a0","#9b5de5","#222222"]};
+let S={mus:1,fx:1,voz:1,vol:.5,dif:1},C={n:"",skin:1,hs:0,hc:1,ts:0,tc:0,pn:0,zp:0,st:0,hat:0,g:0,au:0,bk:0,sc:0};
+try{Object.assign(S,JSON.parse(localStorage.ks||"{}"));Object.assign(C,JSON.parse(localStorage.kc2||"{}"))}catch(e){}
+const sv=()=>{try{localStorage.ks=JSON.stringify(S);localStorage.kc2=JSON.stringify(C)}catch(e){}};
+let p,bs=[],ps=[],t=0,run=false,k={},lv=1,ti=0,ok=0,shk=0,fr=0,kt=0,walk=0,qtm=null,QA,NX,cf="home",pz=0;
+let AT={};try{AT=JSON.parse(localStorage.kat||"{}")}catch(e){}
+const nm=()=>C.n||"Jugador",at=()=>AT[nm().toLowerCase()]||(AT[nm().toLowerCase()]={u:0,b:0}),svA=()=>{try{localStorage.kat=JSON.stringify(AT)}catch(e){}},pc=()=>Math.round(ok/56*100),e=s=>String(s).replace(/</g,"&lt;");
+const ST=Array.from({length:70},()=>({x:Math.random()*600,y:Math.random()*300,r:Math.random()*1.5+.5,p:Math.random()*6}));
+const SY=Array.from({length:15},(_,i)=>({x:i*42-8,w:38,h:70+(i*37)%80}));
+const MS=Array.from({length:12},(_,i)=>({x:Math.random()*600,y:Math.random()*480,s:["∑","π","∫","√","x²","∞","Δ","log","lím"][i%9],v:.15+Math.random()*.3}));
+/* mundos y audio */
+const WD=[
+{n:"Dunas al Atardecer",sky:["#2b1055","#d4418e","#ff9a3c"],pl:"#ff6b35",ld:"#ffe08a",sk:"#4a1a5c",wn:"#ffd166",orb:"#ffe9b0",bpm:118,r:57,pg:[[0,0],[-4,1],[3,1],[-2,1]],a:0,ld2:[0,-1,-1,2,-1,-1,1,-1,-1,3,-1,-1,2,-1,1,-1]},
+{n:"Ciudad Neón",sky:["#0d0221","#3a0ca3","#f72585"],pl:"#00b4d8",ld:"#f72585",sk:"#1a0b4d",wn:"#00f5d4",orb:"#f9c6ff",bpm:122,r:50,pg:[[0,0],[5,0],[-4,1],[-2,1]],a:1,ld2:[-1,3,-1,-1,2,-1,-1,1,-1,-1,3,-1,2,-1,-1,0]},
+{n:"Océano Profundo",sky:["#001d3d","#0077b6","#48cae4"],pl:"#ff6b6b",ld:"#caf0f8",sk:"#03045e",wn:"#90e0ef",orb:"#caf0f8",bpm:114,r:52,pg:[[0,0],[-4,1],[-2,1],[3,1]],a:2,ld2:[0,-1,2,-1,-1,-1,3,-1,2,-1,-1,1,-1,-1,0,-1]},
+{n:"Bosque de Aurora",sky:["#03130f","#0b6e4f","#7ae582"],pl:"#9d4edd",ld:"#e0ff4f",sk:"#052e22",wn:"#b8f2a1",orb:"#e0ffd6",bpm:120,r:55,pg:[[0,1],[5,1],[-3,0],[-5,1]],a:0,ld2:[2,-1,-1,3,-1,1,-1,-1,0,-1,-1,2,-1,-1,3,-1]},
+{n:"Espacio Sideral",sky:["#000000","#1b1464","#5b2a86"],pl:"#ffd166",ld:"#7bdff2",sk:"#12092e",wn:"#a0c4ff",orb:"#f1c0e8",bpm:124,r:48,pg:[[0,0],[-4,1],[-2,1],[5,0]],a:1,ld2:[0,-1,-1,-1,3,-1,-1,2,-1,-1,1,-1,3,-1,2,-1]},
+{n:"Volcán Ardiente",sky:["#1a0000","#8b0000","#ff5400"],pl:"#ffb703",ld:"#ffd6a5",sk:"#3b0a0a",wn:"#ff9e00",orb:"#ffcf99",bpm:126,r:54,pg:[[0,0],[-4,1],[3,1],[-2,1]],a:2,ld2:[3,-1,2,-1,-1,1,-1,-1,0,-1,-1,2,-1,3,-1,-1]}];
+let AC,MG,DL,NB,nt=0,st=0,wi=0,bn={t:0,s:0};
+const mf=m=>440*2**((m-69)/12),CQ=[[0,3,7,10],[0,4,7,11]],AR=[[0,1,2,3,4,3,2,1,0,1,2,3,4,5,4,3],[0,2,1,3,2,4,3,5,4,2,3,1,2,0,1,3],[0,1,2,4,3,2,1,0,2,3,4,5,4,3,2,1]];
+function setWorld(i){wi=i%6;st=0}
+function au(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=S.vol;MG.connect(AC.destination);DL=AC.createDelay(1);const fb=AC.createGain(),wt=AC.createGain();fb.gain.value=.38;wt.gain.value=.5;DL.connect(fb);fb.connect(DL);DL.connect(wt);wt.connect(MG);
+ NB=AC.createBuffer(1,AC.sampleRate>>1,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;nt=AC.currentTime+.1}
+ if(AC.state=="suspended")AC.resume()}
+function tn(f,d,ty,v,t0,o={}){const s=AC.createOscillator(),g=AC.createGain();s.type=ty;s.frequency.setValueAtTime(f,t0);if(o.f2)s.frequency.exponentialRampToValueAtTime(o.f2,t0+d);if(o.det)s.detune.value=o.det;
+ g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(v,t0+(o.at||.005));g.gain.exponentialRampToValueAtTime(.0001,t0+d);let n=s;
+ if(o.lp){const l=AC.createBiquadFilter();l.type="lowpass";l.frequency.value=o.lp;s.connect(l);n=l}n.connect(g);g.connect(MG);if(o.wet)g.connect(DL);s.start(t0);s.stop(t0+d+.05)}
+function nz(d,v,t0,fq,ty){const s=AC.createBufferSource(),g=AC.createGain(),f=AC.createBiquadFilter();s.buffer=NB;f.type=ty||"highpass";f.frequency.value=fq;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.0001,t0+d);s.connect(f);f.connect(g);g.connect(MG);s.start(t0);s.stop(t0+d+.02)}
+function sched(){if(!AC||!S.mus)return;const w=WD[wi],d=15/w.bpm;if(nt<AC.currentTime)nt=AC.currentTime;DL.delayTime.value=Math.min(.95,d*3);
+ while(nt<AC.currentTime+.3){const i=st&15,ci=(st>>5)&3,sec=(st>>7)&1,r=w.r+w.pg[ci][0],ct=CQ[w.pg[ci][1]];
+  if(i%4==0)tn(150,.22,"sine",.4,nt,{f2:42});
+  if(i%4==2)nz(.05,.05,nt,7000);
+  if(i%8==4)nz(.14,.05,nt,1800,"bandpass");
+  if(i%4==2)tn(mf(r-24),d*1.7,"sawtooth",.12,nt,{lp:380});
+  if(st%32==0)ct.forEach(n=>[-7,7].forEach(dt=>tn(mf(r+n),d*32,"sawtooth",.016,nt,{lp:1000+500*sec,at:1.6,det:dt*4})));
+  const k2=AR[w.a][i];tn(mf(r+12+ct[k2%4]+12*(k2>>2)),d*1.6,"sawtooth",.035,nt,{lp:2400,wet:1});
+  if(sec&&w.ld2[i]>=0)tn(mf(r+24+ct[w.ld2[i]]),d*3,"sine",.09,nt,{wet:1,at:.02});
+  nt+=d;st++}}
+setInterval(sched,80);
+function sfx(n){if(!AC||!S.fx)return;const t0=AC.currentTime,F={jump:()=>tn(300,.15,"square",.15,t0,{f2:700}),ok:()=>{tn(660,.1,"square",.15,t0);tn(990,.2,"square",.15,t0+.1)},no:()=>tn(200,.4,"sawtooth",.15,t0,{f2:80}),lose:()=>[500,400,300,200].forEach((f,i)=>tn(f,.25,"square",.18,t0+i*.15)),win:()=>[523,659,784,1047].forEach((f,i)=>tn(f,.2,"square",.16,t0+i*.12))};F[n]()}
+function say(s){try{if(!S.voz||!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(s);u.lang="es-ES";u.rate=.95;u.pitch=1.15;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(er){}}
+/* dibujo */
+const shd=(h,a)=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(a>0?v+(255-v)*a:v*(1+a))));return`rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`};
+const ell=(g,X,Y,a,b,c)=>{g.fillStyle=c;g.beginPath();g.ellipse(X,Y,a,b,0,0,7);g.fill()};
+const lim=(g,a,b,c,d,w,cl)=>{g.strokeStyle=cl;g.lineWidth=w;g.lineCap="round";g.lineJoin="round";g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke()};
+function rrp(g,X,Y,w,h,r,c){g.fillStyle=c;g.beginPath();g.moveTo(X+r,Y);g.arcTo(X+w,Y,X+w,Y+h,r);g.arcTo(X+w,Y+h,X,Y+h,r);g.arcTo(X,Y+h,X,Y,r);g.arcTo(X,Y,X+w,Y,r);g.fill()}
+function hero(g,X,Y,f,w,z){g.save();g.translate(X,Y);g.scale(f*z,z);
+ const ph=w==1?Math.sin(fr*.4):0,air=w==2,sk=COL.skin[C.skin],hr=COL.hair[C.hc],tc=COL.top[C.tc],pn=COL.pant[C.pn],zp=COL.shoe[C.zp],ht=COL.hat[C.hat],ts=C.ts;
+ g.translate(0,w==1?-Math.abs(ph)*1.3:0);
+ const leg=(a,c,bk)=>{const ax=air?(bk?-6:8):a*9,ay=air?(bk?-10:-7):-3-Math.abs(a)*1.5,kx=air?(bk?-2:6):ax*.4+2,ky=air?-16:-15;
+  lim(g,0,-27,kx,ky,7.5,c);lim(g,kx,ky,ax,ay-2,6.4,c);rrp(g,ax-3.5,ay-2,12,6,3,zp);g.fillStyle="#ffffffaa";g.fillRect(ax-2.5,ay+2.4,10,1.4)};
+ const arm=(a,bk)=>{const hx=air?(bk?-5:10):-a*9,hy=air?-58:-28,ex=air?(bk?-3:7):hx*.5+1,ey=air?-51:-37;
+  lim(g,1,-46,ex,ey,5.4,bk?shd(tc,-.3):tc);lim(g,ex,ey,hx+1,hy+2,4.6,ts==0?(bk?shd(sk,-.15):sk):(bk?shd(tc,-.3):tc));ell(g,hx+1.5,hy+3,2.7,3,bk?shd(sk,-.15):sk)};
+ arm(ph,1);
+ if(C.bk){rrp(g,-14,-48,10,20,3.5,"#8a5a2b");rrp(g,-13,-44,8,7,2,"#6b431c");lim(g,-4,-47,3,-42,1.8,"#5a3418")}
+ leg(-ph,shd(pn,-.25),1);
+ if(C.hs==1)rrp(g,-11,-65,10,26,4.5,hr);
+ const gr=g.createLinearGradient(-7,0,7,0);gr.addColorStop(0,shd(tc,.25));gr.addColorStop(.6,tc);gr.addColorStop(1,shd(tc,-.3));
+ g.fillStyle=gr;g.beginPath();g.moveTo(-6.8,-47);g.quadraticCurveTo(0,-51,6.8,-47);g.lineTo(5.6,-26);g.lineTo(-5.6,-26);g.fill();
+ if(ts==1){g.fillStyle="#fff";g.beginPath();g.moveTo(-2.8,-49);g.lineTo(2.8,-49);g.lineTo(0,-38);g.fill();lim(g,0,-38,0,-26,1,shd(tc,-.5))}
+ if(ts==2){ell(g,-2,-49,6,3.5,shd(tc,-.25));rrp(g,-4,-37,8,6,2,shd(tc,-.2));lim(g,1,-47,1,-41,.9,"#fff");lim(g,3,-47,3,-42,.9,"#fff")}
+ if(ts==3){g.fillStyle="#fff";g.beginPath();g.moveTo(-3,-49);g.lineTo(0,-45);g.lineTo(3,-49);g.lineTo(1.5,-44);g.lineTo(-1.5,-44);g.fill();for(let i=0;i<3;i++)ell(g,0,-42+i*5,.7,.7,"#fff")}
+ if(ts==0)rrp(g,-6,-38,11.5,2,1,shd(tc,.4));
+ rrp(g,-5.8,-29,11.6,4,1.5,pn);lim(g,-5.6,-29,5.6,-29,1,"#222");
+ leg(ph,pn,0);
+ rrp(g,-2.2,-52,4.4,6,1.5,shd(sk,-.1));
+ if(C.sc){rrp(g,-5,-52,10,4.2,2,"#ff6b35");lim(g,-2,-49,-3.5,-38,3.2,"#ff6b35");lim(g,-4,-45,-1,-45,1,"#ffd166")}
+ ell(g,-5.8,-58.5,2,3,shd(sk,-.12));ell(g,.5,-59,8,9.2,sk);
+ ell(g,3.8,-60,2.2,2.6,"#fff");ell(g,4.4,-60,1.3,1.7,"#3b2314");ell(g,4.8,-60.6,.5,.5,"#fff");
+ lim(g,2,-64.2,6.4,-63.6,1,shd(hr,-.2));lim(g,8.3,-59.5,9.1,-56.6,1.1,shd(sk,-.2));ell(g,4.3,-55.6,2,1.2,"#ff7a8a55");
+ g.strokeStyle=shd(sk,-.5);g.lineWidth=1;g.beginPath();g.arc(4.2,-54.8,2.2,.2,2.7);g.stroke();
+ const cap=()=>{g.beginPath();g.moveTo(-8.4,-56);g.bezierCurveTo(-10,-73,6,-74,8.6,-63);g.quadraticCurveTo(4,-66,1,-64.6);g.quadraticCurveTo(-4,-63,-6,-57);g.fill()};
+ g.fillStyle=hr;if(C.hs==2)[[-6,-66,4.5],[-1,-69.5,5],[5,-68,4.5],[-9,-60,4],[8,-65,3.3]].forEach(a=>ell(g,a[0],a[1],a[2],a[2],hr));else if(C.hs==4){g.globalAlpha=.5;cap();g.globalAlpha=1}else cap();
+ if(C.hs==3)ell(g,-5,-72,4.3,4.3,hr);
+ if(C.g){g.strokeStyle="#111";g.lineWidth=1.1;g.strokeRect(1.4,-63,5.8,4.8);g.fillStyle="#9fe8ff44";g.fillRect(1.4,-63,5.8,4.8);lim(g,1.4,-61,-6,-61.6,1,"#111")}
+ if(C.au){g.strokeStyle="#222";g.lineWidth=2.2;g.beginPath();g.arc(.5,-59,9.8,Math.PI*1.03,Math.PI*1.9);g.stroke();ell(g,-5.5,-58,3.7,4.6,"#222");ell(g,-5.5,-58,2.2,3,tc)}
+ if(C.st==1){g.fillStyle=ht;g.beginPath();g.arc(.5,-63.5,9,Math.PI,0);g.fill();rrp(g,5,-64.5,10,2.8,1.4,shd(ht,-.25));ell(g,.5,-72.4,1.2,1.2,shd(ht,.4))}
+ if(C.st==2){rrp(g,-9.5,-73,21,2.6,.8,ht);rrp(g,-6,-71,13,5.5,2,shd(ht,-.25));lim(g,11,-72,13,-64,1.1,"#ffd166")}
+ if(C.st==3){g.fillStyle=ht;g.beginPath();g.moveTo(-8,-67);g.lineTo(-9,-78);g.lineTo(-4,-73);g.lineTo(.5,-80);g.lineTo(5,-73);g.lineTo(10,-78);g.lineTo(9,-67);g.fill();ell(g,.5,-70.5,1.3,1.3,"#ef476f")}
+ arm(-ph,0);g.restore()}
+function kong(){const X=62,Y=P[4],b=Math.sin(fr*.15)*3,th=kt>0,cir=(a,b2,r,cl)=>{x.fillStyle=cl;x.beginPath();x.arc(a,b2,r,0,7);x.fill()};
+ x.fillStyle="#6b3a12";x.beginPath();x.ellipse(X,Y-30,27,29,0,0,7);x.fill();x.fillStyle="#d9a066";x.beginPath();x.ellipse(X,Y-26,15,19,0,0,7);x.fill();
+ x.strokeStyle="#6b3a12";x.lineWidth=11;x.lineCap="round";x.beginPath();x.moveTo(X-22,Y-44);x.lineTo(X-34,Y-16+b*2);x.moveTo(X+22,Y-44);x.lineTo(X+(th?34:30),th?Y-78:Y-20-b*2);x.stroke();
+ if(th)cir(X+34,Y-88,10,"#b5651d");cir(X,Y-62,18,"#6b3a12");x.fillStyle="#e8b98a";x.beginPath();x.ellipse(X,Y-58,12,10,0,0,7);x.fill();
+ cir(X-6,Y-64,4,"#fff");cir(X+6,Y-64,4,"#fff");cir(X-6,Y-64,2,"#111");cir(X+6,Y-64,2,"#111");
+ x.strokeStyle="#111";x.lineWidth=2;x.beginPath();x.moveTo(X-10,Y-71);x.lineTo(X-2,Y-67);x.moveTo(X+10,Y-71);x.lineTo(X+2,Y-67);x.stroke();
+ if(th){x.fillStyle="#400";x.beginPath();x.ellipse(X,Y-52,6,4,0,0,7);x.fill()}else{x.beginPath();x.moveTo(X-5,Y-52);x.lineTo(X+5,Y-52);x.stroke()}
+ x.fillStyle="#ff2e93";x.fillRect(X-4,Y-44,8,12)}
+function prof(){const X=300,Y=P[4],w=Math.sin(fr*.2)*10;
+ x.fillStyle="#ff4fa3";x.beginPath();x.moveTo(X-7,Y-24);x.lineTo(X+7,Y-24);x.lineTo(X+13,Y);x.lineTo(X-13,Y);x.fill();
+ x.fillStyle="#f1c27d";x.beginPath();x.arc(X,Y-32,8,0,7);x.fill();x.fillStyle="#5a2d0c";x.beginPath();x.arc(X,Y-34,9,Math.PI,0);x.fill();x.fillRect(X-9,Y-34,3,14);x.fillRect(X+6,Y-34,3,14);
+ x.strokeStyle="#111";x.lineWidth=1;x.strokeRect(X-6,Y-34,5,4);x.strokeRect(X+1,Y-34,5,4);
+ x.strokeStyle="#f1c27d";x.lineWidth=4;x.beginPath();x.moveTo(X+6,Y-22);x.lineTo(X+16,Y-40+w);x.stroke();
+ x.fillStyle="#fff";x.fillRect(X-38,Y-72,76,20);x.fillStyle="#2b1268";x.font="bold 11px sans-serif";x.textAlign="center";x.fillText("¡Ayúdame!",X,Y-58)}
+function barrel(b){x.save();x.translate(b.x,P[b.l]-9);x.rotate(b.r);const f=b.fs>1;x.fillStyle=f?"#1e90ff":"#b5651d";x.beginPath();x.arc(0,0,9,0,7);x.fill();x.strokeStyle=f?"#cfe8ff":"#5a2d0c";x.lineWidth=2;x.beginPath();x.arc(0,0,6,0,7);x.moveTo(-9,0);x.lineTo(9,0);x.stroke();x.restore()}
+function burst(X,Y,cl,n=14){const q=["#ffd166","#ef476f","#06d6a0","#118ab2","#fff"];for(let i=0;i<n;i++)ps.push({x:X,y:Y,vx:(Math.random()-.5)*7,vy:-Math.random()*6,l:45,c:cl||q[i%5]})}
+function dr(){const w=WD[wi];x.save();if(shk>0){x.translate((Math.random()-.5)*shk,(Math.random()-.5)*shk);shk--}
+ const g=x.createLinearGradient(0,0,0,480);w.sky.forEach((q,i)=>g.addColorStop(i/2,q));x.fillStyle=g;x.fillRect(-10,-10,620,500);
+ ST.forEach(s=>{x.globalAlpha=.5+.5*Math.sin(fr*.05+s.p);x.fillStyle="#fff";x.fillRect(s.x,s.y,s.r,s.r)});x.globalAlpha=1;
+ x.fillStyle=w.orb+"44";x.beginPath();x.arc(530,58,38+Math.sin(fr*.03)*3,0,7);x.fill();x.fillStyle=w.orb;x.beginPath();x.arc(530,58,26,0,7);x.fill();
+ x.font="20px sans-serif";x.textAlign="center";MS.forEach(m=>{m.y-=m.v;if(m.y<-20)m.y=500;x.fillStyle="#ffffff30";x.fillText(m.s,m.x+Math.sin(fr*.02+m.v*9)*12,m.y)});
+ SY.forEach((s,i)=>{x.fillStyle=w.sk;x.fillRect(s.x,480-s.h,s.w,s.h);x.fillStyle=w.wn;for(let a=0;a<s.h-10;a+=14)for(let b=4;b<s.w-6;b+=12)if((a*7+b*3+i+(fr>>6))%5<2)x.fillRect(s.x+b,480-s.h+a+6,5,6)});
+ P.forEach(y=>{x.strokeStyle=w.ld+"55";x.lineWidth=2;x.beginPath();for(let a=0;a<600;a+=30){x.moveTo(a,y+8);x.lineTo(a+15,y+22);x.lineTo(a+30,y+8)}x.stroke();x.fillStyle=w.pl;x.fillRect(0,y,600,8);x.fillStyle="#ffffffaa";x.fillRect(0,y,600,2);x.fillStyle="#0005";for(let a=15;a<600;a+=30)x.fillRect(a,y+4,2,2)});
+ x.fillStyle=w.ld;L.forEach(a=>{const y0=P[a.l+1],y1=P[a.l];x.fillRect(a.x-8,y0,3,y1-y0);x.fillRect(a.x+5,y0,3,y1-y0);for(let y=y0;y<y1;y+=12)x.fillRect(a.x-8,y,16,2)});
+ kong();prof();bs.forEach(barrel);
+ if(p){const py=p.cl?p.yy:P[p.l]-p.h;hero(x,p.x,py,p.f||1,p.h>0?2:walk,.82);x.font="bold 10px sans-serif";x.textAlign="center";x.fillStyle="#fff";x.fillText(nm(),p.x,py-68)}
+ ps.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=.2;q.l--;x.fillStyle=q.c;x.fillRect(q.x,q.y,4,4)});ps=ps.filter(q=>q.l>0);
+ if(bn.t>0){bn.t--;x.globalAlpha=Math.min(1,bn.t/30,(240-bn.t)/20);x.fillStyle="#000a";x.fillRect(0,200,600,84);x.textAlign="center";x.fillStyle=w.ld;x.font="bold 14px sans-serif";x.fillText("MUNDO "+(wi+1),300,225);x.fillStyle="#fff";x.font="bold 30px sans-serif";x.fillText(w.n,300,264);x.globalAlpha=1}
+ x.restore()}
+/* juego */
+function reset(){p={x:300,l:0,h:0,vy:0,cl:null,yy:0,f:1};bs=[];t=0;kt=0}
+function hud(){$("ht").textContent=`Oportunidad ${Math.max(1,at().u)}/3 · Nivel ${lv} · Tema ${Math.min(ti+1,14)}/14 · ${pc()}%`}
+function ov(h,na){o.innerHTML="<div class=bx>"+h+"</div>";o.style.display="flex";if(na)o.firstChild.style.animation="none"}
+const B=(a,s)=>`<button data-a="${a}">${s}</button>`,hide=()=>{o.style.display="none"};
+function go(){hide();reset();run=true;const w=(ti+lv-1)%6;if(w!=wi||!bn.s)setWorld(w);bn={t:240,s:1}}
+function sh(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function thr(){kt=18;bs.push({x:90,l:4,d:1,r:0,fs:lv>=2&&Math.random()<.3?1.6:1,cd:0})}
+function up(){t++;if(kt>0)kt--;walk=0;const dm=[.8,1,1.3][S.dif];
+ if(!p.cl){if(k.l){p.x-=2.4;p.f=-1;walk=1}if(k.r){p.x+=2.4;p.f=1;walk=1}p.x=Math.max(10,Math.min(590,p.x));
+  if(p.h==0&&k.j){p.vy=7.2;p.h=.01;sfx("jump");burst(p.x,P[p.l],"#fff",6)}
+  if(p.h>0){p.h+=p.vy;p.vy-=.5;if(p.h<=0){p.h=0;p.vy=0}}
+  if(p.h==0){const u=L.find(a=>a.l==p.l&&Math.abs(a.x-p.x)<10),d=L.find(a=>a.l==p.l-1&&Math.abs(a.x-p.x)<10);
+   if(k.u&&u){p.cl=u;p.x=u.x;p.yy=P[p.l]}else if(k.d&&d){p.cl=d;p.x=d.x;p.yy=P[p.l]}}
+ }else{const a=p.cl;walk=k.u||k.d?1:0;if(k.u)p.yy-=2.2;if(k.d)p.yy+=2.2;
+  if(k.u&&p.yy<=P[a.l+1]){p.l=a.l+1;p.yy=P[p.l];p.cl=null}else if(k.d&&p.yy>=P[a.l]){p.l=a.l;p.yy=P[p.l];p.cl=null}}
+ const iv=Math.max(32,(100-lv*8)/dm)|0;if(t%iv==1||(t%iv==22&&lv>=2&&Math.random()<.5))thr();
+ bs.forEach(b=>{b.x+=b.d*(1.7+lv*.3)*dm*b.fs;b.r+=b.d*.2*b.fs;if(b.cd)b.cd--;
+  if(b.l>0&&!b.cd&&L.find(a=>a.l==b.l-1&&Math.abs(a.x-b.x)<6)&&Math.random()<.3){b.l--;b.cd=40}
+  if(b.l>0&&(b.x>590&&b.d>0||b.x<10&&b.d<0)){b.l--;b.d*=-1}});
+ bs=bs.filter(b=>b.x>-5&&b.x<605);
+ if(!p.cl)for(const b of bs)if(b.l==p.l&&Math.abs(b.x-p.x)<14&&p.h<17)return die();
+ if(p.l==4&&Math.abs(p.x-300)<20)win()}
+function die(){run=false;shk=18;burst(p.x,P[p.l]-20,"#ef476f",26);sfx("lose");say("Perdiste, "+nm());
+ ov(`<h2>¡PERDISTE, ${e(nm()).toUpperCase()}!</h2><p>Donkey Kong Diferencial te derribó. Supera el reto de <b>${T[ti][0]}</b> (4 preguntas) para volver a trepar.</p>`+B("qgo","Responder"))}
+function win(){run=false;lv++;hud();burst(300,P[4]-40,null,60);sfx("win");say("¡Bien hecho, "+nm()+"!");
+ ov(`<h2>¡Rescataste a la Profesora Función!</h2><p>${e(nm())}, Kong la secuestró otra vez... Nivel ${lv}: los barriles serán más rápidos y numerosos.</p>`+B("go","Siguiente nivel"))}
+function fin(){const s=pc(),a=at(),q=3-a.u;a.b=Math.max(a.b,s);svA();hud();ov(`<h2>${s==100?"¡MAESTRO DEL CÁLCULO!":s>=80?"¡Excelente!":s>=60?"¡Bien hecho!":"¡Sigue practicando!"}</h2><p>${e(nm())}, completaste los 14 temas.<br>Puntaje final: <b style="font-size:34px">${s}%</b><br>(${ok} de 56 correctas)</p><p>${q>0?`Te quedan <b>${q}</b> oportunidad${q>1?"es":""}.`:"Ya usaste tus 3 oportunidades."} Mejor puntaje: <b>${a.b}%</b></p>`+(q>0?B("play2","Jugar otra vez"):"")+B("home","Menú principal"));burst(300,200,null,80);sfx("win")}
+const GR={9:[[v=>Math.sqrt(v-4),-1,9,-1,4],[v=>1/(v-3),-2,8,-5,5],[v=>v*v-1,-4,4,-2,10],[v=>v*v,-4,4,-1,9]],11:[[v=>2*v+6,-6,2,-6,10],[v=>v**3,-3,3,-9,9],[v=>3**v,-3,3,-1,10],[v=>Math.exp(v),-3,3,-1,10]]};
+function graf(cv,[f,a,b,d,u]){const g=cv.getContext("2d"),W=cv.width,Hh=cv.height,m=28,X=v=>m+(v-a)/(b-a)*(W-2*m),Y=v=>Hh-m-(v-d)/(u-d)*(Hh-2*m);
+ g.fillStyle="#0d1440";g.fillRect(0,0,W,Hh);g.font="10px sans-serif";g.fillStyle="#cde";g.strokeStyle="#ffffff22";g.lineWidth=1;
+ const sx=b-a>10?2:1,sy=u-d>10?2:1;
+ for(let v=Math.ceil(a);v<=b;v++)if(!(v%sx)){g.beginPath();g.moveTo(X(v),Y(d));g.lineTo(X(v),Y(u));g.stroke();g.textAlign="center";g.fillText(v,X(v),Hh-m+13)}
+ for(let v=Math.ceil(d);v<=u;v++)if(!(v%sy)){g.beginPath();g.moveTo(X(a),Y(v));g.lineTo(X(b),Y(v));g.stroke();g.textAlign="right";g.fillText(v,m-4,Y(v)+3)}
+ g.strokeStyle="#fff";g.lineWidth=1.6;g.beginPath();if(a<=0&&b>=0){g.moveTo(X(0),Y(d));g.lineTo(X(0),Y(u))}if(d<=0&&u>=0){g.moveTo(X(a),Y(0));g.lineTo(X(b),Y(0))}g.stroke();
+ g.textAlign="left";g.fillStyle="#ffd166";g.fillText("x",W-m+6,Hh-m+13);g.fillText("y",6,m-8);
+ g.save();g.beginPath();g.rect(m,m,W-2*m,Hh-2*m);g.clip();g.strokeStyle="#ffd166";g.lineWidth=2.8;g.beginPath();let pen=false,q=0;
+ for(let px=m;px<=W-m;px++){const w=f(a+(px-m)/(W-2*m)*(b-a));if(!isFinite(w)){pen=false;continue}const yy=Y(w);pen&&Math.abs(yy-q)<90?g.lineTo(px,yy):g.moveTo(px,yy);pen=true;q=yy}
+ g.stroke();g.restore()}
+function quiz(n){const[nmT,qs]=T[n],tm=(n==9||n==11)?50:30;let i=0;
+ (function nx(){clearInterval(qtm);
+  if(i==4){ti++;hud();if(n==13)return fin();return ov(`<h2>Tema "${nmT}" superado</h2><p>Puntaje actual: ${pc()}%. ¡Vuelve a trepar, ${e(nm())}!</p>`+B("go","Seguir jugando"))}
+  const q=qs[i],op=sh(q.slice(1));let left=tm*10,done=0;
+  ov(`<small>Tema ${n+1}/14 · ${nmT} · Pregunta ${i+1}/4</small><div id=tb><i id=tf></i></div><div id=ts>${tm}s</div><h3>${e(q[0])}</h3>${GR[n]?"<canvas id=gc width=320 height=210></canvas>":""}`+op.map((s,j)=>`<button class=op data-a="q:${j}">${"ABCD"[j]}) ${e(s)}</button>`).join("")+"<div id=fb></div>");
+  if(GR[n])graf($("gc"),GR[n][i]);
+  QA=j=>{if(done)return;done=1;clearInterval(qtm);const g=j>=0&&op[j]==q[1],bt=o.querySelectorAll(".op");
+   bt.forEach((z,m)=>{z.disabled=true;if(op[m]==q[1])z.classList.add("g")});if(j>=0&&!g)bt[j].classList.add("r");
+   if(g)ok++;hud();sfx(g?"ok":"no");burst(300,240,g?null:"#ef476f",g?40:12);
+   $("fb").innerHTML=`<h3>${g?"¡Correcto!":j<0?"¡Se acabó el tiempo!":"Incorrecto"}</h3>`+(g?"":`<p style="text-align:left;background:#0005;border-left:4px solid #ffd166;padding:8px;border-radius:6px"><b>Respuesta correcta:</b> ${e(q[1])}<br><b>Explicación:</b> ${e(EX[n][i])}</p>`)+B("nx","Siguiente");if(!g&&$("fb").scrollIntoView)$("fb").scrollIntoView({behavior:"smooth",block:"nearest"})};
+  NX=()=>{i++;nx()};
+  qtm=setInterval(()=>{left--;$("tf").style.width=left/(tm*10)*100+"%";$("tf").style.background=left<tm*2.5?"#ef476f":"#06d6a0";$("ts").textContent=Math.ceil(left/10)+"s";if(left<=0)QA(-1)},100);
+ })()}
+/* menús */
+function home(pa){pz=pa;ov(`<h1>KONG<br>DIFERENCIAL</h1><p>Rescata a la Profesora Función y domina el precálculo</p>`+(pa?B("cont","Continuar"):B("play","Jugar"))+B("cust","Personalizar")+B("ins","Instrucciones")+B("temas","Temas")+B("set","Ajustes")+(pa?B("quit","Salir al menú"):""))}
+function cust(f,na){cf=f;const sw=(kk,arr)=>arr.map((cl,i)=>`<i class="sw${C[kk]==i?" s":""}" style="background:${cl}" data-a="c:${kk}:${i}"></i>`).join(""),
+ bt=(kk,arr)=>arr.map((s,i)=>`<button class="${C[kk]==i?"on":""}" data-a="c:${kk}:${i}">${s}</button>`).join(""),tg=(kk,s)=>`<button class="${C[kk]?"on":""}" data-a="c:${kk}:0">${s}</button>`;
+ ov(`<h2>Tu personaje</h2><input id=nm maxlength=14 placeholder="Nombre del jugador" value="${e(C.n).replace(/"/g,"")}"><br><canvas id=pv width=130 height=180></canvas><p><b>Piel</b><br>${sw("skin",COL.skin)}</p><p><b>Cabello</b><br>${bt("hs",["Corto","Largo","Rizado","Moño","Rapado"])}<br>${sw("hc",COL.hair)}</p><p><b>Ropa</b><br>${bt("ts",["Camiseta","Chaqueta","Sudadera","Camisa"])}<br>${sw("tc",COL.top)}</p><p><b>Pantalón</b><br>${sw("pn",COL.pant)}</p><p><b>Zapatos</b><br>${sw("zp",COL.shoe)}</p><p><b>Sombrero</b><br>${bt("st",["Ninguno","Gorra","Birrete","Corona"])}<br>${sw("hat",COL.hat)}</p><p><b>Accesorios</b><br>${tg("g","Gafas")}${tg("au","Audífonos")}${tg("bk","Mochila")}${tg("sc","Bufanda")}</p>`+B("ok",f=="play"?"¡Empezar juego!":"Guardar")+B("back","Volver"),na)}
+function ins(){ov(`<h2>Instrucciones</h2><ul><li>Cada jugador tiene solo 3 oportunidades para jugar el juego completo; se guarda tu mejor puntaje.</li><li>Sube por las escaleras hasta la Profesora Función, arriba a la derecha de Kong.</li><li>PC: flechas o WASD para moverte, ↑/↓ en escaleras, ESPACIO para saltar. Celular: botones bajo el juego.</li><li>Salta los barriles. ¡Los azules van más rápido y algunos bajan por las escaleras!</li><li>Si un barril te golpea, respondes 4 preguntas de un tema. Tienes 30 segundos por pregunta (50 en funciones, con su gráfica).</li><li>Cada tema abre un mundo nuevo con su propia música. Son 14 temas y 56 preguntas. El puntaje sube con cada acierto: 100% si aciertas todas.</li></ul>`+B("back","Volver"))}
+function temas(){ov(`<h2>Los 14 temas</h2><ol>${T.map(s=>`<li>${s[0]}</li>`).join("")}</ol>`+B("back","Volver"))}
+function set(){const on=v=>v?"on":"";ov(`<h2>Ajustes</h2><button class="${on(S.mus)}" data-a="s:mus">Música</button><button class="${on(S.fx)}" data-a="s:fx">Efectos</button><button class="${on(S.voz)}" data-a="s:voz">Voz</button><p>Volumen: ${Math.round(S.vol*100)}%<br>${B("s:vol:-1","−")+B("s:vol:1","+")}</p><p>Dificultad<br>${["Fácil","Normal","Difícil"].map((s,i)=>`<button class="${S.dif==i?"on":""}" data-a="s:dif:${i}">${s}</button>`).join("")}</p>`+B("back","Volver"))}
+function begin(){const a=at();if(a.u>=3)return ov(`<h2>Sin oportunidades</h2><p>${e(nm())}, ya usaste tus 3 oportunidades.<br>Tu mejor puntaje: <b style="font-size:30px">${a.b}%</b></p>`+B("home","Menú principal"));
+ a.u++;svA();ok=0;ti=0;lv=1;hud();ov(`<h2>La historia</h2><p>En la Universidad de Cálculo, <b>Donkey Kong Diferencial</b> secuestró a la <b>Profesora Función</b> y la escondió en lo alto de su torre. Solo <b>${e(nm())}</b> puede rescatarla saltando barriles y dominando el precálculo. ¡Vamos!</p><p><b>Oportunidad ${a.u} de 3</b></p>`+B("go","¡A trepar!"))}
+function act(a){const[r,...z]=a.split(":"),i=$("nm");if(i)C.n=i.value.trim();
+ if(r=="c"){const kk=z[0];C[kk]=["g","au","bk","sc"].includes(kk)?1-C[kk]:+z[1];sv();const s0=o.firstChild.scrollTop;cust(cf,1);o.firstChild.scrollTop=s0;return}
+ if(r=="s"){const kk=z[0];if(kk=="vol")S.vol=Math.max(0,Math.min(1,+(S.vol+.1*z[1]).toFixed(1)));else if(kk=="dif")S.dif=+z[1];else S[kk]^=1;if(MG)MG.gain.value=S.vol;sv();return set()}
+ if(r=="q")return QA&&QA(+z[0]);
+ ({home:()=>home(0),back:()=>home(pz),play:()=>cust("play"),play2:begin,cust:()=>cust("cust"),ins,temas,set,go,nx:()=>NX(),qgo:()=>quiz(ti),cont:()=>{hide();run=true},quit:()=>{run=false;const a=at();a.b=Math.max(a.b,pc());svA();home(0)},
+  mus:()=>{S.mus^=1;sv()},pau:()=>{if(run){run=false;home(1)}},
+  ok:()=>{C.n=C.n||"Jugador";sv();if(cf!="play")return home(0);begin()}})[r]()}
+$("a").addEventListener("click",v=>{const b=v.target.closest("[data-a]");if(!b||b.disabled)return;au();act(b.dataset.a)});
+/* controles */
+const M={ArrowLeft:"l",a:"l",ArrowRight:"r",d:"r",ArrowUp:"u",w:"u",ArrowDown:"d",s:"d"," ":"j"};
+addEventListener("keydown",v=>{if(document.activeElement&&document.activeElement.tagName=="INPUT")return;const q=M[v.key];if(q){k[q]=1;v.preventDefault()}});
+addEventListener("keyup",v=>{const q=M[v.key];if(q)k[q]=0});
+document.querySelectorAll("#t button").forEach(b=>{const q=b.dataset.k;b.addEventListener("pointerdown",v=>{v.preventDefault();au();k[q]=1});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>k[q]=0))});
+reset();hud();home(0);
+(function f(){fr++;if(run)up();dr();const pv=$("pv");if(pv){const g=pv.getContext("2d");g.clearRect(0,0,130,180);hero(g,65,172,1,1,2.3)}requestAnimationFrame(f)})();
+</script></body></html>
